@@ -868,6 +868,10 @@ function updateAI(dt){
     }
   }
 
+  // Clamp CPU to court bounds
+  p2.cx=Math.max(0.03,Math.min(0.97,p2.cx));
+  p2.cz=Math.max(0.02,Math.min(0.97,p2.cz));
+
   // ── DUNK ANIMATION ────────────────────────────────────────────────────────
   if(p2.dunking){
     p2.dunkT+=dt;const prog=Math.min(1,p2.dunkT/38);

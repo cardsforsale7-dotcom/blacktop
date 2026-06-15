@@ -1050,7 +1050,9 @@ function drawTouchControls(){
     X.fillText(label,btn.x,btn.y);
     X.textBaseline='alphabetic';
   }
-  drawBtn(BTN_A,'SHOOT','rgba(255,140,0,.85)',tBtnA);
+  const p1z=gs.p1;
+  const aLabel=p1z.hasBall?(isDunkZone(p1z)?'DUNK':isLayupZone(p1z)?'LAYUP':'SHOOT'):'STEAL';
+  drawBtn(BTN_A,aLabel,'rgba(255,140,0,.85)',tBtnA);
   drawBtn(BTN_B,'RUN','rgba(0,200,100,.85)',tBtnB);
   const cLabel=gs.p1.hasBall?'SPIN':'BLOCK';
   drawBtn(BTN_C,cLabel,'rgba(80,180,255,.85)',tBtnC);
@@ -1325,24 +1327,26 @@ function drawHUD(){
     X.fillStyle=i<gs.score[1]?'#1030cc':'rgba(255,255,255,.12)';X.fill();
   }
 
-  // Stamina bar
-  const stam=gs.p1.stamina,sw=80,sh2=7,sx2=10,sy2=H-46;
+  // Stamina bar — move up on touch to avoid joystick overlap
+  const stam=gs.p1.stamina,sw=80,sh2=7,sx2=isTouchDevice?160:10,sy2=isTouchDevice?H-18:H-46;
   X.fillStyle='rgba(0,0,0,.5)';X.beginPath();X.roundRect(sx2,sy2,sw,sh2,3);X.fill();
   X.fillStyle=stam>60?'#0cf':stam>30?'#f80':'#f44';
   X.beginPath();X.roundRect(sx2,sy2,sw*(stam/100),sh2,3);X.fill();
   X.font='8px Arial';X.fillStyle='rgba(255,255,255,.4)';X.textAlign='left';
   X.fillText('TURBO',sx2,sy2-2);
-  if(gs.p1.sprinting){X.font='bold 9px Arial';X.fillStyle='#0cf';X.fillText('⚡ SPRINT',sx2+sw+4,sy2+6);}
+  if(gs.p1.sprinting){X.font='bold 9px Arial';X.fillStyle='#0cf';X.fillText('⚡',sx2+sw+4,sy2+6);}
 
   const d=DIFFS[diff];
   X.font='bold 10px Arial';X.fillStyle=d.col;X.textAlign='left';X.fillText(d.name,10,H-10);
 
-  // Controls & mute badges
-  const bx=W-78,by=H-28;
-  X.fillStyle='rgba(255,255,255,.08)';X.strokeStyle='rgba(255,255,255,.2)';X.lineWidth=1;
-  X.beginPath();X.roundRect(bx,by,68,20,4);X.fill();X.stroke();
-  X.font='bold 10px Arial';X.textAlign='center';X.fillStyle='rgba(255,255,255,.5)';
-  X.fillText('[C] CONTROLS',bx+34,by+13);
+  // Controls badge — hide on touch (no keyboard)
+  if(!isTouchDevice){
+    const bx=W-78,by=H-28;
+    X.fillStyle='rgba(255,255,255,.08)';X.strokeStyle='rgba(255,255,255,.2)';X.lineWidth=1;
+    X.beginPath();X.roundRect(bx,by,68,20,4);X.fill();X.stroke();
+    X.font='bold 10px Arial';X.textAlign='center';X.fillStyle='rgba(255,255,255,.5)';
+    X.fillText('[C] CONTROLS',bx+34,by+13);
+  }
 
   // Outdoor badge
   if(outdoor){X.font='9px Arial';X.fillStyle='rgba(100,200,255,.5)';X.textAlign='left';X.fillText('🌙 OUTDOOR',10,H-22);}
@@ -1489,7 +1493,7 @@ function drawMenu(){
   X.fillText(outdoor?'🌙 OUTDOOR MODE  (click or O to toggle)':'🏟 ARENA MODE  (click or O to toggle)',W/2,H/2+164);
 
   X.font='18px Arial';X.fillStyle='rgba(255,255,255,.75)';
-  X.fillText('SPACE or ENTER to play',W/2,H/2+185);
+  X.fillText(isTouchDevice?'TAP ANYWHERE TO PLAY':'SPACE or ENTER to play',W/2,H/2+185);
 
   if(series[0]||series[1]){
     X.font='13px Arial';X.fillStyle='rgba(255,255,255,.32)';
@@ -1590,7 +1594,7 @@ function drawGameOver(){
   if(shareCopiedT>0)shareCopiedT--;
 
   X.font='11px Arial';X.fillStyle='rgba(255,255,255,.22)';
-  X.fillText('SPACE — rematch  |  ESC — menu',W/2,shrY+shrH+16);
+  X.fillText(isTouchDevice?'Tap REMATCH or MAIN MENU above':'SPACE — rematch  |  ESC — menu',W/2,shrY+shrH+16);
 }
 
 // ── Intro animation ───────────────────────────────────────────────────────

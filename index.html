@@ -996,10 +996,11 @@ function onTouchGame(e){
       for(const t of e.changedTouches){
         const{x,y}=tcXY(t);
         if(!gs){
-          DIFFS.forEach((_,i)=>{const bx=W/2-130+i*130,by=H/2+56;if(x>=bx-45&&x<=bx+45&&y>=by-18&&y<=by+18)diff=i;});
-          [7,11,21].forEach((s,i)=>{const bx=W/2-60+i*60,by=H/2+124;if(x>=bx-22&&x<=bx+22&&y>=by-14&&y<=by+14)winScore=s;});
-          if(x>=W/2-120&&x<=W/2+120&&y>=H/2+154&&y<=H/2+172)outdoor=!outdoor;
-          if(y>=H/2+178&&y<=H/2+200){SFX.menu();mkGame();}
+          let hitSelector=false;
+          DIFFS.forEach((_,i)=>{const bx=W/2-130+i*130,by=H/2+56;if(x>=bx-45&&x<=bx+45&&y>=by-18&&y<=by+18){diff=i;hitSelector=true;}});
+          [7,11,21].forEach((s,i)=>{const bx=W/2-60+i*60,by=H/2+124;if(x>=bx-22&&x<=bx+22&&y>=by-14&&y<=by+14){winScore=s;hitSelector=true;}});
+          if(x>=W/2-120&&x<=W/2+120&&y>=H/2+154&&y<=H/2+172){outdoor=!outdoor;hitSelector=true;}
+          if(!hitSelector){SFX.menu();mkGame();}
         }
         if(gs&&gs.phase==='over'){
           const sw=440,sh=138,sy=H/2-20,btnY=sy+sh+50,btnW=160,btnH=38,gap=20;
@@ -1119,8 +1120,8 @@ function update(dt){
     return;
   }
 
-  // Inject touch virtual keys
-  if(joyDx!==0||joyDy!==0||tBtnA||tBtnB||tBtnC){
+  // Inject touch virtual keys (always run on touch device so key releases are detected)
+  if(isTouchDevice){
     K['ArrowLeft']=joyDx<-0.28;K['ArrowRight']=joyDx>0.28;
     K['ArrowUp']=joyDy<-0.28;K['ArrowDown']=joyDy>0.28;
     K['Space']=tBtnA;K['ShiftLeft']=tBtnB;
